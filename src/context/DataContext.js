@@ -1,6 +1,8 @@
 import {createContext, useCallback, useState, useEffect} from 'react';
 import {auth, storage, database, reference} from '../../firebaseconfig';
 import {
+  initializeAuth,
+  getReactNativePersistence,
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -29,6 +31,7 @@ export const DataProvider = ({children}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState('');
+  const [loggedInUser, setLoggedInUser] = '';
   const [username, setUsername] = useState('');
   const [phone, setPhone] = useState('');
   const [imageUpload, setImageUpload] = useState(null);
@@ -56,11 +59,13 @@ export const DataProvider = ({children}) => {
       .then(userCredential => {
         // Signed in
         setUser(userCredential.user);
+
         setSignUpLoading(false);
         // saving user info to the real time database
       })
       .catch(error => {
         setSignUpError(error.code);
+        console.log(error);
         setSignUpLoading(false);
         setTimeout(() => {
           setSignUpError('');
@@ -68,25 +73,28 @@ export const DataProvider = ({children}) => {
       });
   }, [email, password, userId]);
 
-  //   login Function
-  //   const signIn = useCallback(() => {
-  //     setLoginLoading(true);
+  //login Function
+  const signIn = useCallback(() => {
+    console.log('Singinig');
+    setLoginLoading(true);
 
-  //     signInWithEmailAndPassword(auth, email, password)
-  //       .then((userCredential) => {
-  //         // Signed in
-  //         setUser(userCredential.user);
-  //         setSigned(true);
-  //         setLoginLoading(false);
-  //       })
-  //       .catch((error) => {
-  //         setLoginError(error.code);
-  //         setLoginLoading(false);
-  //         setTimeout(() => {
-  //           setLoginError("");
-  //         }, 3000);
-  //       });
-  //   }, [email, password]);
+    signInWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
+        // Signed in
+        setUser(userCredential.user);
+        console.log(userCredential.user);
+        setSigned(true);
+        setLoginLoading(false);
+      })
+      .catch(error => {
+        setLoginError(error.code);
+        console.log(error);
+        setLoginLoading(false);
+        setTimeout(() => {
+          setLoginError('');
+        }, 3000);
+      });
+  }, [email, password]);
 
   //   Upload Image function
   //   function upload() {
@@ -150,27 +158,28 @@ export const DataProvider = ({children}) => {
         email,
         password,
         user,
+        loggedInUser,
         // username,
         // phone,
-        // loginError,
+        loginError,
         signUpError,
-        // signed,
+        signed,
         // userIdentify,
         // imageUpload,
         // profileImg,
         // LoginLoading,
         SignUpLoading,
-        // allUsers,
+        allUsers,
         // LoadError,
-        // setEmail,
+        setEmail,
         // setPhone,
         // setUsername,
-        // setPassword,
+        setPassword,
         // setImageUpload,
         // setProfileImg,
         // // functions
         submit,
-        // signIn,
+        signIn,
         // upload,
       }}>
       {children}

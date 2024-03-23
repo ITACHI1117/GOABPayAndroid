@@ -10,16 +10,109 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useTheme} from '@react-navigation/native';
 import {AntDesign} from 'react-native-vector-icons';
+import DataContext from './context/DataContext';
 // import { MaterialIcons } from "@expo/vector-icons";
 // import { Octicons } from "@expo/vector-icons";
 import User from 'react-native-vector-icons/AntDesign';
 import Key from 'react-native-vector-icons/Octicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = ({navigation}) => {
+  const {
+    email,
+    password,
+    loginError,
+    LoginLoading,
+    allUsers,
+    signIn,
+    signed,
+    setEmail,
+    setPassword,
+    loggedInUser,
+  } = useContext(DataContext);
+
   const {colors} = useTheme();
+
+  const handleEmailChange = text => {
+    setEmail(text);
+  };
+  const handlePasswordChange = text => {
+    setPassword(text);
+  };
+
+  const [loginUserId, setLoginInUserId] = useState();
+  const [retrivedEmail, setRetrivedEmail] = useState('');
+
+  useEffect(() => {
+    let userEmail = email;
+    if (allUsers === undefined) {
+      return;
+    } else {
+      allUsers.map(({email, id}) => {
+        if (userEmail === email) {
+          setLoginInUserId(id);
+        }
+        return null;
+      });
+    }
+  }, [allUsers, signIn, email]);
+
+  // Store Email function
+  const storeData = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+      console.log('Data stored successfully!');
+    } catch (error) {
+      console.error('Error storing data:', error);
+    }
+  };
+
+  // Stroing Email value and then redirecting
+  async function redirect() {
+    await signed;
+    storeData('email', email);
+    setTimeout(() => {
+      // 👇 Redirects to Home Screen
+      navigation.navigate('Home');
+    });
+  }
+
+  if (signed === true) {
+    redirect();
+  }
+
+  const retrieveData = async key => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      if (value !== null) {
+        setRetrivedEmail(value);
+        return value;
+      } else {
+        console.log('No data found for key:', key);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error retrieving data:', error);
+      return null;
+    }
+  };
+  retrieveData('email');
+  // // Removing the stored
+  // const removeData = async key => {
+  //   try {
+  //     await AsyncStorage.removeItem(key);
+  //     console.log('Data removed successfully!');
+  //   } catch (error) {
+  //     console.error('Error removing data:', error);
+  //   }
+  // };
+  // setTimeout(() => {
+  //   removeData('email');
+  // }, 9000);
+
   return (
     <SafeAreaView style={{backgroundColor: colors.background}}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -82,10 +175,13 @@ const Login = ({navigation}) => {
                   style={{position: 'absolute', zIndex: 1, left: 30, top: 23}}
                 />
                 <TextInput
-                  textContentType="username"
+                  textContentType="emailAddress"
                   style={[styles.textInput, {color: 'white'}]}
-                  placeholder="Username"
+                  placeholder="Email"
+                  value={retrivedEmail !== '' ? retrivedEmail : email}
+                  onChangeText={handleEmailChange}
                   placeholderTextColor={colors.placeholder}
+                  color={colors.text}
                 />
               </View>
 
@@ -108,13 +204,16 @@ const Login = ({navigation}) => {
                   textContentType="password"
                   style={[styles.textInput, {color: 'white'}]}
                   placeholder="Password"
+                  value={password}
+                  secureTextEntry={true}
+                  required
                   placeholderTextColor={colors.placeholder}
+                  onChangeText={handlePasswordChange}
+                  color={colors.text}
                 />
               </View>
 
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => navigation.replace('Home')}>
+              <TouchableOpacity style={styles.button} onPress={() => signIn()}>
                 <Text style={{color: 'white', fontSize: 22}}>Login</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -126,6 +225,7 @@ const Login = ({navigation}) => {
                   <Text style={{color: '#2DA6FF'}}> Register</Text>
                 </Text>
               </TouchableOpacity>
+              <Text>{loginError}</Text>
             </View>
           </View>
         </KeyboardAvoidingView>

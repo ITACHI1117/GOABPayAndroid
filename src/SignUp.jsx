@@ -11,12 +11,47 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';
+import {useContext} from 'react';
 import User from 'react-native-vector-icons/AntDesign';
 import Email from 'react-native-vector-icons/MaterialIcons';
 import Key from 'react-native-vector-icons/Octicons';
 import {useTheme} from '@react-navigation/native';
+import DataContext from './context/DataContext';
 
 const SignUp = ({navigation}) => {
+  const {
+    email,
+    password,
+    user,
+    username,
+    phone,
+    signUpError,
+    setEmail,
+    setPassword,
+    submit,
+    setPhone,
+    setUsername,
+    SignUpLoading,
+  } = useContext(DataContext);
+
+  async function redirect() {
+    await user;
+    setTimeout(() => {
+      // 👇 Redirects to about page, note the `replace: true`
+      // navigate(`/profile`, { replace: false });
+      navigation.navigate('Login');
+    });
+  }
+
+  user ? redirect() : '';
+
+  const handleEmailChange = text => {
+    setEmail(text);
+  };
+  const handlePasswordChange = text => {
+    setPassword(text);
+  };
+
   const {colors} = useTheme();
   return (
     <KeyboardAvoidingView
@@ -82,6 +117,8 @@ const SignUp = ({navigation}) => {
                 textContentType="emailAddress"
                 style={[styles.textInput]}
                 placeholder="Email"
+                value={email}
+                onChangeText={handleEmailChange}
                 placeholderTextColor={colors.placeholder}
               />
             </View>
@@ -104,13 +141,15 @@ const SignUp = ({navigation}) => {
                 textContentType="password"
                 style={[styles.textInput]}
                 placeholder="Password"
+                secureTextEntry={true}
+                value={password}
+                required
                 placeholderTextColor={colors.placeholder}
+                onChangeText={handlePasswordChange}
               />
             </View>
 
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => navigation.replace('Home')}>
+            <TouchableOpacity style={styles.button} onPress={() => submit()}>
               <Text style={{color: 'white', fontSize: 22}}>Register</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -121,6 +160,7 @@ const SignUp = ({navigation}) => {
                 <Text style={{color: '#2DA6FF'}}> Login</Text>
               </Text>
             </TouchableOpacity>
+            <Text>{signUpError}</Text>
           </View>
         </View>
       </TouchableWithoutFeedback>
