@@ -9,6 +9,7 @@ import {
   TextInput,
   Platform,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {useTheme} from '@react-navigation/native';
@@ -76,7 +77,7 @@ const Login = ({navigation}) => {
     storeData('email', email);
     setTimeout(() => {
       // 👇 Redirects to Home Screen
-      navigation.navigate('Home');
+      navigation.navigate('PasscodeScreen');
     });
   }
 
@@ -91,7 +92,7 @@ const Login = ({navigation}) => {
         setRetrivedEmail(value);
         return value;
       } else {
-        console.log('No data found for key:', key);
+        // console.log('No data found for key:', key);
         return null;
       }
     } catch (error) {
@@ -100,7 +101,7 @@ const Login = ({navigation}) => {
     }
   };
   retrieveData('email');
-  // // Removing the stored
+  // Removing the stored
   // const removeData = async key => {
   //   try {
   //     await AsyncStorage.removeItem(key);
@@ -111,7 +112,7 @@ const Login = ({navigation}) => {
   // };
   // setTimeout(() => {
   //   removeData('email');
-  // }, 9000);
+  // }, 1000);
 
   return (
     <SafeAreaView style={{backgroundColor: colors.background}}>
@@ -130,7 +131,7 @@ const Login = ({navigation}) => {
             }}>
             <Text
               style={{
-                paddingTop: 70,
+                paddingTop: 10,
                 fontSize: 35,
                 fontWeight: 500,
                 color: '#2F1155',
@@ -178,7 +179,7 @@ const Login = ({navigation}) => {
                   textContentType="emailAddress"
                   style={[styles.textInput, {color: 'white'}]}
                   placeholder="Email"
-                  value={retrivedEmail !== '' ? retrivedEmail : email}
+                  value={email}
                   onChangeText={handleEmailChange}
                   placeholderTextColor={colors.placeholder}
                   color={colors.text}
@@ -225,7 +226,12 @@ const Login = ({navigation}) => {
                   <Text style={{color: '#2DA6FF'}}> Register</Text>
                 </Text>
               </TouchableOpacity>
-              <Text>{loginError}</Text>
+              <Text style={{color: 'red', fontSize: 15}}>{loginError}</Text>
+              {LoginLoading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+              ) : (
+                ''
+              )}
             </View>
           </View>
         </KeyboardAvoidingView>

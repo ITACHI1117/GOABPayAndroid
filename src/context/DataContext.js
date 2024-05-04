@@ -167,7 +167,7 @@ export const DataProvider = ({children}) => {
         // userIdentify,
         // imageUpload,
         // profileImg,
-        // LoginLoading,
+        LoginLoading,
         SignUpLoading,
         allUsers,
         // LoadError,

@@ -17,6 +17,7 @@ NfcManager.start();
 function Home() {
   const [ismodalVisible, setIsModalVisible] = useState(false);
   const [paymentLink, setPaymentLink] = useState(null);
+  const [paymentDetails, setPaymentDetails] = useState();
 
   const openModal = () => {
     setIsModalVisible(true);
@@ -45,47 +46,88 @@ function Home() {
 
   // const txRef = generateTransactionReference();
 
-  const handlePaymentInitiation = async () => {
-    try {
-      // initialize payment
-      const Link = await FlutterwaveInit({
-        tx_ref: generateTransactionReference(20),
-        authorization: 'FLWPUBK_TEST-0f6335aff300d743e2c864258d738c41-X',
-        customer: {
-          email: 'ajogujoseph0317@gmail.com',
-          phonenumber: '08146821934',
-          name: 'Joseph Ajogu',
-        },
-        amount: 1000,
-        currency: 'NGN',
-        payment_options: 'card',
-        redirect_url: 'https://example.com/',
-      });
+  // const handlePaymentInitiation = async () => {
+  //   try {
+  //     // initialize payment
+  //     const Link = await FlutterwaveInit(paymentDetails);
 
-      // Set the payment link in state
-      setPaymentLink(Link);
-      console.log(Link);
-    } catch (error) {
-      console.error('Error initializing payment:', error);
-    }
-    openModal();
-  };
+  //     // Set the payment link in state
+  //     setPaymentLink(Link);
+  //     console.log(Link);
+  //   } catch (error) {
+  //     console.error('Error initializing payment:', error);
+  //   }
+  //   openModal();
+  // };
 
   const handleOnRedirect = data => {
     console.log(data);
   };
 
   async function readNdef() {
+    console.warn('Reading Tag');
     try {
-      // register for the NFC tag with NDEF in it
+      // Register for the NFC tag with NDEF in it
       await NfcManager.requestTechnology(NfcTech.Ndef);
-      // the resolved tag object will contain `ndefMessage` property
+      // The resolved tag object will contain `ndefMessage` property
       const tag = await NfcManager.getTag();
       console.warn('Tag found', tag);
+
+      // Check if the tag contains NDEF message
+      if (tag.ndefMessage) {
+        // Log the NDEF message
+        // console.log('NDEF Message:', tag.ndefMessage);
+
+        // Get the payload array from the first record
+        const payloadArray = tag.ndefMessage[0].payload;
+
+        // Convert the payload array to Uint8Array
+        const uint8Array = new Uint8Array(payloadArray);
+
+        // Convert the payload array to a string assuming UTF-8 encoding
+        const text = String.fromCharCode.apply(null, uint8Array);
+
+        setPaymentDetails(text);
+
+        console.log(text);
+
+        const handlePaymentInitiation = async () => {
+          try {
+            // initialize payment
+            const Link = await FlutterwaveInit({
+              tx_ref: generateTransactionReference(20),
+              authorization: text,
+              customer: {
+                email: 'ajogujoseph0317@gmail.com',
+                phonenumber: '08146821934',
+                name: 'Joseph Ajogu',
+              },
+              amount: 7000,
+              currency: 'NGN',
+              payment_options: 'card',
+              redirect_url: 'https://example.com/',
+            });
+
+            // Set the payment link in state
+            setPaymentLink(Link);
+            console.log(Link);
+          } catch (error) {
+            console.error('Error initializing payment:', error);
+          }
+          openModal();
+        };
+
+        handlePaymentInitiation();
+
+        // Process the NDEF message as needed
+        // For example, you can extract and decode records from the NDEF message
+      } else {
+        console.warn('Tag does not contain NDEF message');
+      }
     } catch (ex) {
       console.warn('Oops!', ex);
     } finally {
-      // stop the nfc scanning
+      // Stop the NFC scanning
       NfcManager.cancelTechnologyRequest();
     }
   }
@@ -95,7 +137,7 @@ function Home() {
       <TouchableOpacity onPress={readNdef}>
         <Text>Scan a Tag</Text>
       </TouchableOpacity>
-      <Button title="Open Modal" onPress={handlePaymentInitiation} />
+      {/* <Button title="Open Modal" onPress={handlePaymentInitiation} /> */}
 
       {/* Modal component */}
       <WebViewModal

@@ -7,6 +7,7 @@ import {Appearance, StatusBar} from 'react-native';
 import SignIn from './src/SignUp';
 import Login from './src/Login';
 import Home from './src/Home';
+import PasscodeScreen from './src/PasscodeScreen';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import CreateAccount from './screens/Registration/CreateAccount';
 // import ResetPassword from './screens/Registration/ResetPassword';
@@ -84,6 +85,16 @@ const Navigator = () => {
             />
           )} */}
         <Stack.Screen
+          name="PasscodeScreen"
+          component={PasscodeScreen}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
           name="Login"
           component={Login}
           options={{title: null, headerShown: false}}
@@ -93,11 +104,7 @@ const Navigator = () => {
           component={SignIn}
           options={{title: null, headerShown: false}}
         />
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{title: null, headerShown: false}}
-        />
+
         {/* <Stack.Screen
             name="ResetPassword"
             component={ResetPassword}
