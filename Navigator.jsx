@@ -85,16 +85,6 @@ const Navigator = () => {
             />
           )} */}
         <Stack.Screen
-          name="PasscodeScreen"
-          component={PasscodeScreen}
-          options={{title: null, headerShown: false}}
-        />
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{title: null, headerShown: false}}
-        />
-        <Stack.Screen
           name="Login"
           component={Login}
           options={{title: null, headerShown: false}}
@@ -102,6 +92,16 @@ const Navigator = () => {
         <Stack.Screen
           name="SignIn"
           component={SignIn}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
+          name="PasscodeScreen"
+          component={PasscodeScreen}
+          options={{title: null, headerShown: false}}
+        />
+        <Stack.Screen
+          name="Home"
+          component={Home}
           options={{title: null, headerShown: false}}
         />
 

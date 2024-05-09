@@ -17,6 +17,11 @@ NfcManager.start();
 function Home() {
   const [ismodalVisible, setIsModalVisible] = useState(false);
   const [paymentLink, setPaymentLink] = useState(null);
+  const [ammount, setAmmount] = useState(null);
+
+  const handleAmmountChange = text => {
+    setAmmount(text);
+  };
 
   const openModal = () => {
     setIsModalVisible(true);

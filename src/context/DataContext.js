@@ -33,6 +33,8 @@ export const DataProvider = ({children}) => {
   const [user, setUser] = useState('');
   const [loggedInUser, setLoggedInUser] = '';
   const [username, setUsername] = useState('');
+  const [firstname, setFirstName] = useState('');
+  const [lastname, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [imageUpload, setImageUpload] = useState(null);
   const [profileImg, setProfileImg] = useState('');
@@ -62,6 +64,13 @@ export const DataProvider = ({children}) => {
 
         setSignUpLoading(false);
         // saving user info to the real time database
+        set(reference(database, 'users/' + userCredential.user.uid), {
+          id: userCredential.user.uid,
+          email: email,
+          firstname: firstname,
+          lastname: lastname,
+          phone: phone,
+        });
       })
       .catch(error => {
         setSignUpError(error.code);
@@ -156,11 +165,14 @@ export const DataProvider = ({children}) => {
       value={{
         // states
         email,
+        firstname,
+        lastname,
         password,
         user,
+        phone,
         loggedInUser,
         // username,
-        // phone,
+
         loginError,
         signUpError,
         signed,
@@ -172,9 +184,11 @@ export const DataProvider = ({children}) => {
         allUsers,
         // LoadError,
         setEmail,
-        // setPhone,
+        setPhone,
         // setUsername,
         setPassword,
+        setFirstName,
+        setLastName,
         // setImageUpload,
         // setProfileImg,
         // // functions

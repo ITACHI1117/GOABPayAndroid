@@ -18,6 +18,7 @@ const firebaseConfig = {
   storageBucket: 'goabpay.appspot.com',
   messagingSenderId: '374878092501',
   appId: '1:374878092501:web:4210df7601b9354835365c',
+  databaseURL: 'https://goabpay-default-rtdb.firebaseio.com/',
 };
 
 // Initialize Firebase

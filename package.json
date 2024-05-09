@@ -15,7 +15,7 @@
     "@react-navigation/native-stack": "^6.9.26",
     "crypto-js": "^3.3.0",
     "events": "^3.3.0",
-    "firebase": "^10.9.0",
+    "firebase": "^10.11.1",
     "flutterwave-react-native": "^1.0.4",
     "flutterwave-react-v3": "^1.0.7",
     "nod3des": "^0.0.3",

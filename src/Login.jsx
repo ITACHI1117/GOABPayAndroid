@@ -24,6 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const Login = ({navigation}) => {
   const {
     email,
+    user,
     password,
     loginError,
     LoginLoading,
@@ -45,7 +46,7 @@ const Login = ({navigation}) => {
   };
 
   const [loginUserId, setLoginInUserId] = useState();
-  const [retrivedEmail, setRetrivedEmail] = useState('');
+  const [retrivedEmail, setRetrivedEmail] = useState(null);
 
   useEffect(() => {
     let userEmail = email;
@@ -61,38 +62,55 @@ const Login = ({navigation}) => {
     }
   }, [allUsers, signIn, email]);
 
+  function redirect() {
+    navigation.replace('PasscodeScreen');
+  }
+
+  // // Stroing Email value and then redirecting
+  // signed ? redirect() : '';
+
   // Store Email function
   const storeData = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-      console.log('Data stored successfully!');
-    } catch (error) {
-      console.error('Error storing data:', error);
+    if (signed) {
+      try {
+        await AsyncStorage.setItem(key, value);
+        console.log('Data stored successfully!');
+      } catch (error) {
+        console.error('Error storing data:', error);
+      }
     }
   };
 
-  // Stroing Email value and then redirecting
-  async function redirect() {
-    await signed;
-    storeData('email', email);
-    setTimeout(() => {
-      // 👇 Redirects to Home Screen
-      navigation.navigate('PasscodeScreen');
-    });
-  }
-
-  if (signed === true) {
+  if (signed || retrivedEmail != null) {
+    storeData('signed', JSON.stringify(user));
+    console.log('redirect');
     redirect();
   }
+
+  // Removing the stored
+  const removeData = async key => {
+    try {
+      await AsyncStorage.removeItem(key);
+      console.log('Data removed successfully!');
+    } catch (error) {
+      console.error('Error removing data:', error);
+    }
+  };
+
+  // setTimeout(() => {
+  //   removeData('email');
+  // }, 1000);
 
   const retrieveData = async key => {
     try {
       const value = await AsyncStorage.getItem(key);
       if (value !== null) {
         setRetrivedEmail(value);
+        console.log('Data Retrived');
+
         return value;
       } else {
-        // console.log('No data found for key:', key);
+        console.log('No data found for key:', key);
         return null;
       }
     } catch (error) {
@@ -100,19 +118,7 @@ const Login = ({navigation}) => {
       return null;
     }
   };
-  retrieveData('email');
-  // Removing the stored
-  // const removeData = async key => {
-  //   try {
-  //     await AsyncStorage.removeItem(key);
-  //     console.log('Data removed successfully!');
-  //   } catch (error) {
-  //     console.error('Error removing data:', error);
-  //   }
-  // };
-  // setTimeout(() => {
-  //   removeData('email');
-  // }, 1000);
+  retrieveData('signed');
 
   return (
     <SafeAreaView style={{backgroundColor: colors.background}}>
@@ -177,12 +183,10 @@ const Login = ({navigation}) => {
                 />
                 <TextInput
                   textContentType="emailAddress"
-                  style={[styles.textInput, {color: 'white'}]}
+                  style={[styles.textInput, {color: 'black'}]}
                   placeholder="Email"
-                  value={email}
                   onChangeText={handleEmailChange}
                   placeholderTextColor={colors.placeholder}
-                  color={colors.text}
                 />
               </View>
 
@@ -203,14 +207,13 @@ const Login = ({navigation}) => {
                 />
                 <TextInput
                   textContentType="password"
-                  style={[styles.textInput, {color: 'white'}]}
+                  style={[styles.textInput, {color: 'black'}]}
                   placeholder="Password"
-                  value={password}
                   secureTextEntry={true}
                   required
                   placeholderTextColor={colors.placeholder}
                   onChangeText={handlePasswordChange}
-                  color={colors.text}
+                  color={'black'}
                 />
               </View>
 

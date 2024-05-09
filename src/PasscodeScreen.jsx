@@ -4,8 +4,12 @@ import ReactNativePinView from 'react-native-pin-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Cancel from 'react-native-vector-icons/Foundation';
 import Enter from 'react-native-vector-icons/Feather';
+import {useTheme} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 
-const PasscodeScreen = ({navigation}) => {
+const PasscodeScreen = () => {
+  const navigation = useNavigation();
+  const {colors} = useTheme();
   const pinView = useRef(null);
   const [showRemoveButton, setShowRemoveButton] = useState(false);
   const [enteredPin, setEnteredPin] = useState('');
@@ -70,7 +74,7 @@ const PasscodeScreen = ({navigation}) => {
       const storedPasscode = await AsyncStorage.getItem('passcode');
       if (enteredPin === storedPasscode) {
         // Navigate to protected screens
-        navigation.navigate('Home');
+        navigation.replace('Home');
       } else {
         alert('Incorrect passcode!');
       }
@@ -84,7 +88,7 @@ const PasscodeScreen = ({navigation}) => {
       <SafeAreaView
         style={{
           flex: 1,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          // backgroundColor: 'green',
           justifyContent: 'center',
           alignItems: 'center',
         }}>
@@ -96,9 +100,9 @@ const PasscodeScreen = ({navigation}) => {
             fontSize: 50,
           }}>
           {userHasPasscode ? (
-            <Text>Welcome</Text>
+            <Text style={{color: colors.text}}>Welcome</Text>
           ) : (
-            <Text>Create Passcode</Text>
+            <Text style={{color: colors.text}}>Create Passcode</Text>
           )}
           {/* GoabPay */}
         </Text>
@@ -117,25 +121,25 @@ const PasscodeScreen = ({navigation}) => {
           inputViewEmptyStyle={{
             backgroundColor: 'transparent',
             borderWidth: 1,
-            borderColor: '#FFF',
+            borderColor: colors.text,
           }}
           inputViewFilledStyle={{
-            backgroundColor: '#FFF',
+            backgroundColor: '#6E34B8',
           }}
           buttonViewStyle={{
             // borderWidth: 1,
-            borderColor: '#FFF',
+            borderColor: colors.text,
           }}
           buttonTextStyle={{
             fontSize: 30,
-            color: '#FFF',
+            color: colors.text,
           }}
           onButtonPress={key => {
             if (key === 'custom_left') {
               pinView.current.clear();
             }
             if (key === 'custom_right') {
-              alert('Entered Pin: ' + enteredPin);
+              // alert('Welocm: ' + enteredPin);
               userHasPasscode ? authenticatePasscode() : storePasscode();
               pinView.current.clearAll();
             }
